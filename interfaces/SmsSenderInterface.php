@@ -1,8 +1,9 @@
 <?php
 
-namespace interfaces;
+namespace app\interfaces;
 
 interface SmsSenderInterface
 {
     public function send();
+    public function check();
 }

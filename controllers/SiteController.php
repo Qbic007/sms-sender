@@ -2,24 +2,23 @@
 
 namespace app\controllers;
 
-use interfaces\SmsSenderInterface;
+use app\interfaces\SmsInterface;
 use app\models\forms\SmsSendForm;
-use yii\base\InvalidConfigException;
 use yii\web\Controller;
 
 class SiteController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $smsSendForm = new SmsSendForm();
         if (!empty($smsSendFormData = \Yii::$app->request->post()['SmsSendForm'])) {
             $smsSendForm->setAttributes($smsSendFormData);
             try {
                 if ($smsSendForm->validate()) {
-                    $smsSender = \Yii::$container->get(SmsSenderInterface::class);
-                    $smsSender->send();
+                    $sms = \Yii::$container->get(SmsInterface::class);
+                    $sms->create($smsSendForm);
+                    $smsSendForm->clear();
                 }
-                throw new InvalidConfigException();
             } catch (\Throwable $exception) {
                 \Yii::warning($exception->getMessage());
                 //todo: logs config
@@ -31,18 +30,8 @@ class SiteController extends Controller
         ]);
     }
 
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
-
     public function actionSend()
     {
-        return $this->render('about');
+        var_dump($_POST);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\interfaces\SmsInterface;
+use app\models\forms\SmsSendForm;
 use yii\db\ActiveRecord;
 
 /**
@@ -15,10 +17,29 @@ use yii\db\ActiveRecord;
  * @property string $updated_at
  */
 
-class Sms extends ActiveRecord
+class Sms extends ActiveRecord implements SmsInterface
 {
+    const STATUS_NEW = 0;
+    const STATUS_ENQUEUED = 1;
+    const STATUS_SENT = 2;
+    const STATUS_ERROR = 3;
+
     public static function tableName()
     {
         return 'sms';
+    }
+
+    public function rules()
+    {
+        return [
+            [['phone', 'text'], 'safe']
+        ];
+    }
+
+    public function create(SmsSendForm $smsSendForm)
+    {
+        $this->setAttributes($smsSendForm->getAttributes());
+        $this->setAttribute('status', self::STATUS_NEW);
+        $this->save();
     }
 }

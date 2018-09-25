@@ -53,6 +53,13 @@ $config = [
         */
     ],
     'params' => $params,
+    'language' => 'ru-RU',
+    'container' => [
+        'definitions' => [
+            app\interfaces\SmsSenderInterface::class => app\models\SmsSender::class,
+            \app\interfaces\SmsInterface::class => \app\models\Sms::class
+        ]
+    ]
 ];
 
 if (YII_ENV_DEV) {

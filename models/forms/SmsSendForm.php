@@ -24,4 +24,10 @@ class SmsSendForm extends Model
             ['phone', PhoneValidator::class, 'country'=>'RU']
         ];
     }
+
+    public function clear()
+    {
+        $this->phone = '';
+        $this->text = '';
+    }
 }
