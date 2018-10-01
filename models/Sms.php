@@ -24,12 +24,12 @@ class Sms extends ActiveRecord implements SmsInterface
     const STATUS_SENT = 2;
     const STATUS_ERROR = 3;
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'sms';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['phone', 'text'], 'safe']
@@ -41,5 +41,15 @@ class Sms extends ActiveRecord implements SmsInterface
         $this->setAttributes($smsSendForm->getAttributes());
         $this->setAttribute('status', self::STATUS_NEW);
         $this->save();
+    }
+
+    public function getSendingData(): array
+    {
+        $result = [
+            'phone' => $this->phone,
+            'text' => $this->text
+        ];
+
+        return $result;
     }
 }

@@ -4,6 +4,5 @@ namespace app\interfaces;
 
 interface SmsSenderInterface
 {
-    public function send();
-    public function check();
+    public function send(SmsInterface $sms): bool;
 }

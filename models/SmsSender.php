@@ -2,34 +2,42 @@
 
 namespace app\models;
 
+use app\interfaces\SmsInterface;
 use app\interfaces\SmsSenderInterface;
 use yii\httpclient\Client;
 
 class SmsSender implements SmsSenderInterface
 {
-    protected $sms;
+    const PARAMETER_STATUS = 'status';
+    const SUCCESS_STATUS = 'inProgress';
 
-    public function __construct(Sms $sms)
-    {
-        $this->sms = $sms;
-    }
+    protected $url = '';
 
-    public function send()
+    public function send(SmsInterface $sms): bool
     {
         $client = new Client();
-        $response = $client->createRequest()
-            ->setMethod('post')
-            ->setUrl('http://sms-sender/')
-            ->setData(['0'])
-            ->send();
-            echo '<pre>';
-            var_dump($response);
-            echo '</pre>';
-            exit;
+        try {
+            $response = $client->createRequest()->data
+                ->setMethod('post')
+                ->setUrl($this->url)
+                ->setData($sms->getSendingData())
+                ->send();
+        } catch (\Throwable $exception) {
+            \Yii::error($exception->getMessage());
+            return false;
+        }
+
+        if ($response->getIsOK()) {
+            return $this->checkResponse($response->data);
+        }
+
     }
 
-    public function check()
+    protected function checkResponse(String $response): bool
     {
+        $responseArray = json_decode($response);
 
+        return !empty($responseArray[self::PARAMETER_STATUS])
+            && ($responseArray[self::PARAMETER_STATUS] === self::SUCCESS_STATUS);
     }
 }
