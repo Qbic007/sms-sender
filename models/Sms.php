@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\interfaces\SmsInterface;
 use app\models\forms\SmsSendForm;
+use app\models\queries\TimeLimitQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -19,7 +20,7 @@ use yii\db\ActiveRecord;
 
 class Sms extends ActiveRecord implements SmsInterface
 {
-    const STATUS_NEW = 0;
+    const STATUS_UNSENT = 0;
     const STATUS_ENQUEUED = 1;
     const STATUS_SENT = 2;
     const STATUS_ERROR = 3;
@@ -36,10 +37,14 @@ class Sms extends ActiveRecord implements SmsInterface
         ];
     }
 
+    public static function find() {
+        return new TimeLimitQuery(static::class);
+    }
+
     public function create(SmsSendForm $smsSendForm)
     {
         $this->setAttributes($smsSendForm->getAttributes());
-        $this->setAttribute('status', self::STATUS_NEW);
+        $this->setAttribute('status', self::STATUS_UNSENT);
         $this->save();
     }
 

@@ -2,6 +2,7 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$container = require __DIR__ . 'container.php';
 
 $config = [
     'id' => 'basic',
@@ -42,7 +43,7 @@ $config = [
                 ],
             ],
         ],
-        'db' => $db,
+        'db' => $db
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -54,12 +55,7 @@ $config = [
     ],
     'params' => $params,
     'language' => 'ru-RU',
-    'container' => [
-        'definitions' => [
-            app\interfaces\SmsSenderInterface::class => app\models\SmsSender::class,
-            \app\interfaces\SmsInterface::class => \app\models\Sms::class
-        ]
-    ]
+    'container' => $container
 ];
 
 if (YII_ENV_DEV) {
