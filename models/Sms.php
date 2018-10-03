@@ -17,13 +17,17 @@ use yii\db\ActiveRecord;
  * @property string $created_at
  * @property string $updated_at
  */
-
 class Sms extends ActiveRecord implements SmsInterface
 {
     const STATUS_UNSENT = 0;
     const STATUS_ENQUEUED = 1;
     const STATUS_SENT = 2;
     const STATUS_ERROR = 3;
+
+    const FINAL_STATUSES = [
+        self::STATUS_SENT,
+        self::STATUS_ERROR
+    ];
 
     public static function tableName(): string
     {
@@ -33,11 +37,20 @@ class Sms extends ActiveRecord implements SmsInterface
     public function rules(): array
     {
         return [
-            [['phone', 'text'], 'safe']
+            [
+                [
+                    'phone',
+                    'text',
+                    'created_at',
+                    'updated_at'
+                ],
+                'safe'
+            ]
         ];
     }
 
-    public static function find() {
+    public static function find()
+    {
         return new TimeLimitQuery(static::class);
     }
 

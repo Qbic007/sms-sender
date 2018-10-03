@@ -20,7 +20,7 @@ class m180925_100243_create_sms_table extends Migration
             'service_id' => $this->integer(),
             'sms_id' => $this->integer(),
             'create_time' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-            'update_time' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+            'update_time' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
         ]);
         $this->createIndex('i_create_time', 'sms', 'create_time');
     }

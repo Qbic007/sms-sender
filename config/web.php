@@ -2,7 +2,7 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
-$container = require __DIR__ . 'container.php';
+$container = require __DIR__ . '/container.php';
 
 $config = [
     'id' => 'basic',

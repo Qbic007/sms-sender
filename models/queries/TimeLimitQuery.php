@@ -3,24 +3,22 @@
 namespace app\models\queries;
 
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 
-class TimeLimitQuery extends ActiveQuery {
-    const TIME_LIMIT = 3600; //seconds
-
+class TimeLimitQuery extends ActiveQuery
+{
     public function init()
     {
-        /**
-         * @var ActiveRecord $modelClass
-         */
-        $modelClass = $this->modelClass;
-        $tableName = $modelClass::tableName();
-        $this->andWhere(['>=', $tableName.'.status', $this->getLimitDatetime()]);
+        $limit = $this->getLimitDatetime()->format(\Yii::$app->params['dateTimeFormat']);
+        $now = (new \DateTime())->format(\Yii::$app->params['dateTimeFormat']);
+        $this->andWhere(['BETWEEN', 'create_time', $limit, $now]);
         parent::init();
     }
 
+    /**
+     * @return \DateTime
+     */
     protected function getLimitDatetime()
     {
-        return date('Y.m.d H:i:s', time() - self::TIME_LIMIT);
+        return new \DateTime('-' . \Yii::$app->params['lifeTime'] . ' hour');
     }
 }
