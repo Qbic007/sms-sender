@@ -2,10 +2,16 @@
 
 namespace app\models;
 
+use app\interfaces\SmsSenderInterface;
 use app\interfaces\WorkerInterface;
 
 class Worker implements WorkerInterface
 {
+    const SERVICES = [
+        SmsSenderService1::class,
+        SmsSenderService2::class
+    ];
+
     public function begin()
     {
         while (1) {
@@ -54,7 +60,19 @@ class Worker implements WorkerInterface
     protected function send(array $unsentSms)
     {
         foreach ($unsentSms as $sms) {
-            //todo: checking
+            foreach (self::SERVICES as $service) {
+                \Yii::$container->setDefinitions([
+                    SmsSenderInterface::class => $service
+                ]);
+                $sender = \Yii::$container->get(SmsSenderInterface::class);
+                if ($smsId = $sender->send($sms)) {
+                    $sms->status = Sms::STATUS_SENT;
+                    $sms->service_id = $sender->getServiceId();
+                    $sms->sms_id = $sender->getSmsId();
+                    $sms->save();
+                    break;
+                }
+            }
         }
     }
 

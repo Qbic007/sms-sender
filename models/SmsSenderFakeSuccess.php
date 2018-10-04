@@ -2,13 +2,16 @@
 
 namespace app\models;
 
-use app\interfaces\SmsInterface;
 use app\interfaces\SmsSenderInterface;
 
 class SmsSenderFakeSuccess implements SmsSenderInterface
 {
-    public function send(SmsInterface $sms): bool
+    /**
+     * @param Sms $sms
+     * @return bool|int
+     */
+    public function send(Sms $sms)
     {
-        return true;
+        return $sms->getId();
     }
 }

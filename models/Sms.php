@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use app\interfaces\SmsInterface;
 use app\models\forms\SmsSendForm;
 use app\models\queries\TimeLimitQuery;
 use yii\db\ActiveRecord;
@@ -14,10 +13,12 @@ use yii\db\ActiveRecord;
  * @property string $phone
  * @property string $text
  * @property integer $status
+ * @property integer $service_id
+ * @property string $sms_id
  * @property string $created_at
  * @property string $updated_at
  */
-class Sms extends ActiveRecord implements SmsInterface
+class Sms extends ActiveRecord
 {
     const STATUS_UNSENT = 0;
     const STATUS_ENQUEUED = 1;
@@ -69,5 +70,10 @@ class Sms extends ActiveRecord implements SmsInterface
         ];
 
         return $result;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

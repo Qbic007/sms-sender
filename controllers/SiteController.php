@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
-use app\interfaces\SmsInterface;
 use app\models\forms\SmsSendForm;
+use app\models\Sms;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -15,7 +15,7 @@ class SiteController extends Controller
             $smsSendForm->setAttributes($smsSendFormData);
             try {
                 if ($smsSendForm->validate()) {
-                    $sms = \Yii::$container->get(SmsInterface::class);
+                    $sms = new Sms();
                     $sms->create($smsSendForm);
                     $smsSendForm->clear();
                 }
