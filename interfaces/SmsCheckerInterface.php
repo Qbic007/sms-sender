@@ -2,7 +2,9 @@
 
 namespace app\interfaces;
 
+use app\models\Sms;
+
 interface SmsCheckerInterface
 {
-    public function check();
+    public function check(Sms $sms): int;
 }

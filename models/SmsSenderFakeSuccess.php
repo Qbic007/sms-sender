@@ -6,12 +6,13 @@ use app\interfaces\SmsSenderInterface;
 
 class SmsSenderFakeSuccess implements SmsSenderInterface
 {
-    /**
-     * @param Sms $sms
-     * @return bool|int
-     */
-    public function send(Sms $sms)
+    public function send(Sms $sms, int $serviceId): bool
     {
-        return $sms->getId();
+        return true;
+    }
+
+    public function getSmsId(): string
+    {
+        return 0;
     }
 }

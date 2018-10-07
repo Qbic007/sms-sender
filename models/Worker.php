@@ -2,16 +2,16 @@
 
 namespace app\models;
 
+use app\interfaces\SmsCheckerInterface;
 use app\interfaces\SmsSenderInterface;
 use app\interfaces\WorkerInterface;
 
 class Worker implements WorkerInterface
 {
-    const SERVICES = [
-        SmsSenderService1::class,
-        SmsSenderService2::class
-    ];
-
+    /**
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
+     */
     public function begin()
     {
         while (1) {
@@ -56,18 +56,17 @@ class Worker implements WorkerInterface
 
     /**
      * @param Sms[] $unsentSms
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
      */
     protected function send(array $unsentSms)
     {
         foreach ($unsentSms as $sms) {
-            foreach (self::SERVICES as $service) {
-                \Yii::$container->setDefinitions([
-                    SmsSenderInterface::class => $service
-                ]);
+            foreach (Sms::SERVICE_URLS as $serviceId => $service) {
                 $sender = \Yii::$container->get(SmsSenderInterface::class);
-                if ($smsId = $sender->send($sms)) {
-                    $sms->status = Sms::STATUS_SENT;
-                    $sms->service_id = $sender->getServiceId();
+                if ($smsId = $sender->send($sms, $serviceId)) {
+                    $sms->status = Sms::STATUS_ENQUEUED;
+                    $sms->service_id = $serviceId;
                     $sms->sms_id = $sender->getSmsId();
                     $sms->save();
                     break;
@@ -77,12 +76,20 @@ class Worker implements WorkerInterface
     }
 
     /**
-     * @param Sms[] $enqueuedSms
+     * @param array $enqueuedSms
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
      */
     protected function check(array $enqueuedSms)
     {
         foreach ($enqueuedSms as $sms) {
-            //todo: checking
+            $checker = \Yii::$container->get(SmsCheckerInterface::class);
+            $sms->status = $checker->check($sms);
+            if((int)$sms->status === Sms::STATUS_UNSENT) {
+                $sms->service_id = null;
+                $sms->sms_id = null;
+            }
+            $sms->save();
         }
     }
 

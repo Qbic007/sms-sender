@@ -20,6 +20,14 @@ use yii\db\ActiveRecord;
  */
 class Sms extends ActiveRecord
 {
+    const SERVICE_ID_1 = 1;
+    const SERVICE_ID_2 = 2;
+
+    const SERVICE_URLS = [
+        self::SERVICE_ID_1 => 'https://sms-service.com',
+        self::SERVICE_ID_2 => 'https://sms-service2.com'
+    ];
+
     const STATUS_UNSENT = 0;
     const STATUS_ENQUEUED = 1;
     const STATUS_SENT = 2;

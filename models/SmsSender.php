@@ -11,18 +11,18 @@ class SmsSender implements SmsSenderInterface
     const PARAMETER_SMS_ID = 'smsId';
     const SUCCESS_STATUS = 'inProgress';
 
-    protected $url;
-    protected $service_id;
+    const SERVICE_COMMAND_SEND = '/send-sms';
+
     protected $smsId;
 
-    public function send(Sms $sms): bool
+    public function send(Sms $sms, int $serviceId): bool
     {
         $result = false;
         $client = new Client();
         try {
             $response = $client->createRequest()->data
                 ->setMethod('post')
-                ->setUrl($this->url)
+                ->setUrl(Sms::SERVICE_URLS[$serviceId] . self::SERVICE_COMMAND_SEND)
                 ->setData($sms->getSendingData())
                 ->send();
         } catch (\Throwable $exception) {
@@ -30,18 +30,13 @@ class SmsSender implements SmsSenderInterface
             return false;
         }
 
-        if ($response->getIsOK() && (($smsId = $this->checkResponse($response->data)) !== false)) {
+        if ($response->IsOK && (($smsId = $this->checkResponse($response->data)) !== false)) {
             $this->smsId = $smsId;
 
             $result = true;
         }
 
         return $result;
-    }
-
-    public function getServiceId(): int
-    {
-        return $this->service_id;
     }
 
     public function getSmsId(): string
